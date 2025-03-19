@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 	"sync"
 	"time"
+
+	mongosh "test/db"
 
 	"github.com/linxGnu/gosmpp"
 	"github.com/linxGnu/gosmpp/data"
@@ -26,22 +29,32 @@ var (
 )
 
 func main() {
+	db, err := mongosh.Connect(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
+
+	productsRepo := mongosh.NewProductsRepository(db)
+	res, err := productsRepo.GetSMPPConfig(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to fetch SMPP config: %v", err)
+	}
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go sendingAndReceiveSMS(&wg)
+	go sendingAndReceiveSMS(&wg, res)
 
 	wg.Wait()
 }
 
-func sendingAndReceiveSMS(wg *sync.WaitGroup) {
+func sendingAndReceiveSMS(wg *sync.WaitGroup, res *mongosh.SMPPConfig) {
 	defer wg.Done()
 
 	auth := gosmpp.Auth{
-		SMSC:       "smscsim.smpp.org:2775",
-		SystemID:   "eMOg6zg3YyTiibc",
-		Password:   "s50BISiJ",
-		SystemType: "",
+		SMSC:       fmt.Sprintf("%s:%d", res.Host, res.Port),
+		SystemID:   res.Username,
+		Password:   res.Password,
+		SystemType: res.SystemType,
 	}
 
 	trans, err := gosmpp.NewSession(
