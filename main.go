@@ -38,10 +38,9 @@ func sendingAndReceiveSMS(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	auth := gosmpp.Auth{
-		SMSC: "smscsim.smpp.org:2775",
-		//SMSC:       "smscsim.melroselabs.com:8775",
-		SystemID:   "SYSTEMID",
-		Password:   "PASSWORD",
+		SMSC:       "smscsim.smpp.org:2775",
+		SystemID:   "eMOg6zg3YyTiibc",
+		Password:   "s50BISiJ",
 		SystemType: "",
 	}
 
@@ -134,12 +133,12 @@ func newSubmitSM() *pdu.SubmitSM {
 	srcAddr := pdu.NewAddress()
 	srcAddr.SetTon(5)
 	srcAddr.SetNpi(0)
-	_ = srcAddr.SetAddress("MelroseLabs")
+	_ = srcAddr.SetAddress("Ucell")
 
 	destAddr := pdu.NewAddress()
 	destAddr.SetTon(1)
 	destAddr.SetNpi(1)
-	_ = destAddr.SetAddress("447712345678")
+	_ = destAddr.SetAddress("998900417570")
 
 	submitSM := pdu.NewSubmitSM().(*pdu.SubmitSM)
 	submitSM.SourceAddr = srcAddr
