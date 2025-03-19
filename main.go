@@ -19,7 +19,6 @@ import (
 )
 
 var (
-	// TLSDialer is tls connection dialer.
 	TLSDialer = func(addr string) (net.Conn, error) {
 		conf := &tls.Config{
 			InsecureSkipVerify: true,
